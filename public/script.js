@@ -52,3 +52,20 @@ function displayMovies(movies) {
         container.appendChild(card);
     });
 }
+const themeToggle = document.getElementById("themeToggle");
+
+function applyTheme(mode) {
+  document.body.className = mode + "-mode";
+  themeToggle.checked = mode === "light";
+  localStorage.setItem("theme", mode);
+}
+
+themeToggle.addEventListener("change", () => {
+  applyTheme(themeToggle.checked ? "light" : "dark");
+});
+
+// Load saved mode
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("theme") || "dark";
+  applyTheme(saved);
+});
