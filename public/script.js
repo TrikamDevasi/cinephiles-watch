@@ -14,44 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const searchForm = document.getElementById("searchForm");
   if (searchForm) {
-    searchForm.addEventListener("submit", async (e) => {
+    searchForm.addEventListener("submit", (e) => {
       e.preventDefault();
-
-      const movieName = document.getElementById("movieSearch").value.trim();
-      const genre = document.getElementById("genreFilter").value;
-      const year = document.getElementById("yearFilter").value;
-      const rating = document.getElementById("ratingFilter").value;
-      const container = document.getElementById("searchResults");
-
-      if (!movieName && !genre && !year && !rating) {
-        alert("Please enter a movie name or select a filter!");
-        return;
-      }
-
-      container.innerHTML = "<p>🔍 Searching...</p>";
-      clearSections();
-
-      try {
-        const query = new URLSearchParams();
-        if (movieName) query.append("name", movieName);
-        if (genre) query.append("genre", genre);
-        if (year) query.append("year", year);
-        if (rating) query.append("rating", rating);
-
-        const res = await fetch(`/search?${query.toString()}`);
-        const data = await res.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-          container.innerHTML = "<p>❌ No movies found.</p>";
-        } else {
-          container.innerHTML = "";
-          displayMovies(data, container);
-          container.scrollIntoView({ behavior: "smooth" });
-        }
-      } catch (err) {
-        container.innerHTML = "<p>⚠️ Error searching for movie.</p>";
-        console.error(err);
-      }
+      applyFilters(); // Reuse the same function
     });
   }
 });
@@ -194,7 +159,9 @@ function displayMovies(movies, container) {
 
     container.appendChild(card);
   });
-}// ✅ Apply Filters Button Logic
+}
+
+// ✅ Apply Filters Button Logic
 function applyFilters() {
   const genre = document.getElementById("genreFilter").value;
   const year = document.getElementById("yearFilter").value;
@@ -224,5 +191,11 @@ function applyFilters() {
       } else {
         container.innerHTML = "";
         displayMovies(data, container);
-        container.scrollIntoView({ behavior: "s
-
+        container.scrollIntoView({ behavior: "smooth" });
+      }
+    })
+    .catch(err => {
+      container.innerHTML = "<p>⚠️ Error applying filters.</p>";
+      console.error(err);
+    });
+}
