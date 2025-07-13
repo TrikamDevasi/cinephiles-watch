@@ -100,12 +100,12 @@ app.get('/mood', async (req, res) => {
   }
 });
 
-// 🔹 Movie Details
+// 🔹 Movie Details with Age Rating
 app.get('/movie/:id', async (req, res) => {
   const movieId = req.params.id;
 
   try {
-    const [detailsRes, creditsRes, imagesRes] = await Promise.all([
+    const [detailsRes, creditsRes, imagesRes, releaseRes] = await Promise.all([
       axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
         params: { api_key: TMDB_API_KEY, language: 'en-US' }
       }),
@@ -115,24 +115,29 @@ app.get('/movie/:id', async (req, res) => {
       axios.get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
         params: { api_key: TMDB_API_KEY }
       }),
+      axios.get(`https://api.themoviedb.org/3/movie/${movieId}/release_dates`, {
+        params: { api_key: TMDB_API_KEY }
+      })
     ]);
 
     const details = detailsRes.data;
     const images = imagesRes.data.backdrops.map(b => `https://image.tmdb.org/t/p/w500${b.file_path}`);
     const cast = creditsRes.data.cast.slice(0, 10).map(actor => ({
       name: actor.name,
-      image: actor.profile_path
-        ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
-        : null
+      image: actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : null
     }));
-
     const crew = creditsRes.data.crew.slice(0, 10).map(member => ({
       name: member.name,
       job: member.job,
-      image: member.profile_path
-        ? `https://image.tmdb.org/t/p/w200${member.profile_path}`
-        : null
+      image: member.profile_path ? `https://image.tmdb.org/t/p/w200${member.profile_path}` : null
     }));
+
+    let ageRating = "N/A";
+    const releases = releaseRes.data.results;
+    const region = releases.find(r => r.iso_3166_1 === "IN") || releases.find(r => r.iso_3166_1 === "US");
+    if (region && region.release_dates.length > 0) {
+      ageRating = region.release_dates[0].certification || "N/A";
+    }
 
     res.json({
       id: details.id,
@@ -144,11 +149,11 @@ app.get('/movie/:id', async (req, res) => {
       genres: details.genres?.map(g => g.name),
       language: details.original_language,
       description: details.overview,
+      ageRating,
       images,
       cast,
       crew
     });
-
   } catch (error) {
     console.error("Movie Details Error:", error.message);
     res.status(500).json({ error: "Failed to load movie details." });

@@ -35,6 +35,7 @@
           <h2>${movie.title} (${movie.year})</h2>
           <img src="${movie.poster}" alt="${movie.title}" />
           <p><strong>Rating:</strong> ${movie.rating}</p>
+          <p><strong>Age Rating:</strong> ${movie.certification || 'Not Rated'}</p>
           <p><strong>Runtime:</strong> ${movie.runtime} mins</p>
           <p><strong>Genres:</strong> ${movie.genres?.join(", ") || 'N/A'}</p>
           <p><strong>Language:</strong> ${movie.language}</p>
