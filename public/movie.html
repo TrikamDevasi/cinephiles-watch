@@ -3,48 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎬 Movie Details - Cinephiles Watch</title>
-
-  <!-- 🔍 SEO Meta Tags -->
-  <meta name="description" content="Explore detailed info about your favorite movies including cast, trailer, and images on Cinephiles Watch." />
-  <meta name="keywords" content="Movie Details, Cinephiles Watch, Cast, Trailer, Overview, Screenshots" />
-  <meta name="author" content="Trikam Devasi" />
-  <meta name="robots" content="index, follow" />
-
-  <!-- 🌐 Open Graph (for Facebook, LinkedIn) -->
-  <meta property="og:title" content="🎬 Movie Details - Cinephiles Watch" />
-  <meta property="og:description" content="Get cast, trailer, ratings, and more about any movie with Cinephiles Watch." />
-  <meta property="og:image" content="https://yourdomain.com/movie-cover.jpg" />
-  <meta property="og:url" content="https://yourdomain.com/movie.html" />
-  <meta property="og:type" content="website" />
-
-  <!-- 🐦 Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="🎬 Movie Details - Cinephiles Watch" />
-  <meta name="twitter:description" content="Cinephiles Watch shows you movie cast, screenshots, trailer & more." />
-  <meta name="twitter:image" content="https://yourdomain.com/movie-cover.jpg" />
-
-  <!-- 🎨 Styles -->
+  <title>Movie Details - Cinephiles Watch</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
   <header>
-    <h1>🎬 Movie Details</h1>
-    <a href="index.html" style="color: orange; margin-top: 10px;">← Back to Home</a>
+    <h1 class="gradient-heading">🎬 Cinephiles Watch</h1>
+    <p>Movie Details</p>
   </header>
 
-  <main id="movieDetails" class="movie-detail-container">
-    <p>Loading movie...</p>
+  <main class="movie-detail-container" id="movieDetailContainer">
+    <p>Loading movie details...</p>
   </main>
 
-  <!-- 🌗 Theme persistence script -->
   <script>
-    const theme = localStorage.getItem("theme") || "dark";
-    document.body.className = theme + "-mode";
-  </script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const movieId = params.get("id");
+      const container = document.getElementById("movieDetailContainer");
 
-  <!-- 🎥 Movie data script -->
-  <script src="movie.js"></script>
+      if (!movieId) {
+        container.innerHTML = "<p>❌ No movie ID provided.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/movie/${movieId}`);
+        const movie = await res.json();
+
+        container.innerHTML = `
+          <h2>${movie.title} (${movie.year})</h2>
+          <img src="${movie.poster}" alt="${movie.title}" />
+          <p><strong>Rating:</strong> ${movie.rating}</p>
+          <p><strong>Runtime:</strong> ${movie.runtime} mins</p>
+          <p><strong>Genres:</strong> ${movie.genres?.join(", ") || 'N/A'}</p>
+          <p><strong>Language:</strong> ${movie.language}</p>
+          <p><strong>Overview:</strong> ${movie.description}</p>
+
+          <h3>Screenshots</h3>
+          <div class="movie-grid">
+            ${movie.images?.slice(0, 6).map(img => `
+              <img src="${img}" alt="Screenshot" style="width: 250px; border-radius: 8px;" />
+            `).join('')}
+          </div>
+
+          <h3>Cast</h3>
+          <div class="movie-grid">
+            ${movie.cast?.slice(0, 8).map(actor => `
+              <div style="text-align:center">
+                <img src="${actor.image || 'https://via.placeholder.com/150'}" style="border-radius: 50%; width: 120px; height: 120px;" />
+                <p>${actor.name}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <h3>Crew</h3>
+          <div class="movie-grid">
+            ${movie.crew?.slice(0, 6).map(member => `
+              <div style="text-align:center">
+                <img src="${member.image || 'https://via.placeholder.com/150'}" style="border-radius: 50%; width: 120px; height: 120px;" />
+                <p>${member.name}</p>
+                <small>${member.job}</small>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p>⚠️ Failed to load movie details.</p>";
+      }
+    });
+  </script>
 </body>
 </html>

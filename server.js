@@ -8,7 +8,7 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY || "74ce9a72bf119c55eb9f81025b4601
 
 app.use(express.static("public"));
 
-// 🔁 Reusable function to format movies
+// 🔁 Format movies for list pages
 function formatMovies(apiResults) {
   return apiResults.map(movie => ({
     id: movie.id,
@@ -28,12 +28,11 @@ app.get('/trending', async (req, res) => {
     });
     res.json(formatMovies(response.data.results));
   } catch (error) {
-    console.error("Trending Error:", error.message);
     res.status(500).json({ error: "Failed to fetch trending movies." });
   }
 });
 
-// 🔹 Search with Filters (Fixed)
+// 🔹 Search
 app.get('/search', async (req, res) => {
   try {
     const { name, genre, year, language } = req.query;
@@ -55,12 +54,11 @@ app.get('/search', async (req, res) => {
     const response = await axios.get(baseUrl, { params });
     res.json(formatMovies(response.data.results));
   } catch (error) {
-    console.error("Search Error:", error.message);
-    res.status(500).json({ error: "Failed to search movie with filters." });
+    res.status(500).json({ error: "Failed to search movies." });
   }
 });
 
-// 🔹 Mood-based Recommendation
+// 🔹 Mood
 const moodMap = {
   happy: ["Comedy", "Adventure", "Music", "Family"],
   emotional: ["Drama"],
@@ -74,7 +72,7 @@ const moodMap = {
 app.get('/mood', async (req, res) => {
   const mood = req.query.type?.toLowerCase();
   if (!mood || !moodMap[mood]) {
-    return res.status(400).json({ error: "Invalid or missing mood type." });
+    return res.status(400).json({ error: "Invalid mood type." });
   }
 
   try {
@@ -82,8 +80,7 @@ app.get('/mood', async (req, res) => {
       params: { api_key: TMDB_API_KEY }
     });
 
-    const genreList = genreRes.data.genres;
-    const genreIds = genreList
+    const genreIds = genreRes.data.genres
       .filter(genre => moodMap[mood].includes(genre.name))
       .map(genre => genre.id)
       .join(',');
@@ -99,7 +96,6 @@ app.get('/mood', async (req, res) => {
 
     res.json(formatMovies(discoverRes.data.results));
   } catch (error) {
-    console.error("Mood Fetch Error:", error.message);
     res.status(500).json({ error: "Failed to fetch mood-based movies." });
   }
 });
@@ -109,7 +105,7 @@ app.get('/movie/:id', async (req, res) => {
   const movieId = req.params.id;
 
   try {
-    const [detailsRes, creditsRes, imagesRes, videosRes] = await Promise.all([
+    const [detailsRes, creditsRes, imagesRes] = await Promise.all([
       axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
         params: { api_key: TMDB_API_KEY, language: 'en-US' }
       }),
@@ -119,25 +115,47 @@ app.get('/movie/:id', async (req, res) => {
       axios.get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
         params: { api_key: TMDB_API_KEY }
       }),
-      axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
-        params: { api_key: TMDB_API_KEY }
-      }),
     ]);
 
+    const details = detailsRes.data;
+    const images = imagesRes.data.backdrops.map(b => `https://image.tmdb.org/t/p/w500${b.file_path}`);
+    const cast = creditsRes.data.cast.slice(0, 10).map(actor => ({
+      name: actor.name,
+      image: actor.profile_path
+        ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
+        : null
+    }));
+
+    const crew = creditsRes.data.crew.slice(0, 10).map(member => ({
+      name: member.name,
+      job: member.job,
+      image: member.profile_path
+        ? `https://image.tmdb.org/t/p/w200${member.profile_path}`
+        : null
+    }));
+
     res.json({
-      details: detailsRes.data,
-      credits: creditsRes.data,
-      images: imagesRes.data,
-      videos: videosRes.data
+      id: details.id,
+      title: details.title,
+      year: details.release_date?.split('-')[0],
+      poster: `https://image.tmdb.org/t/p/w500${details.poster_path}`,
+      rating: details.vote_average,
+      runtime: details.runtime,
+      genres: details.genres?.map(g => g.name),
+      language: details.original_language,
+      description: details.overview,
+      images,
+      cast,
+      crew
     });
 
-  } catch (err) {
-    console.error("Movie Details Error:", err.message);
+  } catch (error) {
+    console.error("Movie Details Error:", error.message);
     res.status(500).json({ error: "Failed to load movie details." });
   }
 });
 
-// 🔹 Top Rated Movies
+// 🔹 Top Rated
 app.get('/top-rated', async (req, res) => {
   try {
     const response = await axios.get('https://api.themoviedb.org/3/movie/top_rated', {
@@ -145,12 +163,11 @@ app.get('/top-rated', async (req, res) => {
     });
     res.json(formatMovies(response.data.results));
   } catch (error) {
-    console.error("Top Rated Fetch Error:", error.message);
     res.status(500).json({ error: "Failed to fetch top-rated movies." });
   }
 });
 
-// 🔹 Upcoming Movies
+// 🔹 Upcoming
 app.get('/upcoming', async (req, res) => {
   try {
     const response = await axios.get('https://api.themoviedb.org/3/movie/upcoming', {
@@ -158,20 +175,18 @@ app.get('/upcoming', async (req, res) => {
     });
     res.json(formatMovies(response.data.results));
   } catch (error) {
-    console.error("Upcoming Fetch Error:", error.message);
     res.status(500).json({ error: "Failed to fetch upcoming movies." });
   }
 });
 
-// 🔹 Genres List
+// 🔹 Genres
 app.get('/genres', async (req, res) => {
   try {
     const response = await axios.get(`https://api.themoviedb.org/3/genre/movie/list`, {
       params: { api_key: TMDB_API_KEY }
     });
     res.json(response.data.genres);
-  } catch (err) {
-    console.error("Genre List Error:", err.message);
+  } catch (error) {
     res.status(500).json({ error: "Failed to fetch genres" });
   }
 });
@@ -189,18 +204,13 @@ app.get('/by-genre', async (req, res) => {
         sort_by: 'popularity.desc'
       }
     });
-
     res.json(formatMovies(response.data.results));
-  } catch (err) {
-    console.error("Movies by Genre Error:", err.message);
+  } catch (error) {
     res.status(500).json({ error: "Failed to fetch movies by genre" });
   }
 });
 
-// ✅ Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-});
+// 🔹 Autocomplete Suggestions
 app.get('/suggest', async (req, res) => {
   const query = req.query.query;
   if (!query) return res.json([]);
@@ -222,8 +232,12 @@ app.get('/suggest', async (req, res) => {
     }));
 
     res.json(results);
-  } catch (err) {
-    console.error("Autocomplete Error:", err.message);
+  } catch (error) {
     res.status(500).json([]);
   }
+});
+
+// ✅ Start Server
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
