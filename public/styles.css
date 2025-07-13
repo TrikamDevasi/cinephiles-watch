@@ -107,7 +107,7 @@ select option {
 
 button {
   padding: 12px 24px;
-  margin-left: 10px;
+  margin: 10px 5px;
   background-color: orange;
   border: none;
   border-radius: 6px;
@@ -115,11 +115,12 @@ button {
   color: black;
   font-weight: bold;
   font-size: 16px;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 button:hover {
   background-color: darkorange;
+  transform: scale(1.05);
 }
 
 /* 🧠 Mood Section */
@@ -156,6 +157,7 @@ button:hover {
   text-align: left;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .movie-card:hover {
@@ -175,11 +177,45 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
+/* 🎬 Movie Detail Page */
+.movie-detail-container {
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.movie-detail-container img {
+  max-width: 90%;
+  margin: 15px auto;
+}
+
+.movie-detail-container h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.movie-detail-container p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* 🌈 Gradient Heading Class */
+.gradient-heading {
+  background: linear-gradient(to right, orange, #ff69b4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: bold;
+}
+
 /* 📱 Responsive */
 @media (max-width: 600px) {
   input,
-  select {
+  select,
+  button {
     width: 90%;
+    margin-top: 8px;
   }
 
   #movieDetails img {
@@ -188,6 +224,10 @@ button:hover {
 
   .movie-card {
     width: 90%;
+  }
+
+  .movie-detail-container {
+    padding: 10px;
   }
 }
 

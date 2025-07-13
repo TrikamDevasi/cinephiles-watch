@@ -3,19 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Movie Details</title>
+  <title>🎬 Movie Details - Cinephiles Watch</title>
+
+  <!-- 🔍 SEO Meta Tags -->
+  <meta name="description" content="Explore detailed info about your favorite movies including cast, trailer, and images on Cinephiles Watch." />
+  <meta name="keywords" content="Movie Details, Cinephiles Watch, Cast, Trailer, Overview, Screenshots" />
+  <meta name="author" content="Trikam Devasi" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- 🌐 Open Graph (for Facebook, LinkedIn) -->
+  <meta property="og:title" content="🎬 Movie Details - Cinephiles Watch" />
+  <meta property="og:description" content="Get cast, trailer, ratings, and more about any movie with Cinephiles Watch." />
+  <meta property="og:image" content="https://yourdomain.com/movie-cover.jpg" />
+  <meta property="og:url" content="https://yourdomain.com/movie.html" />
+  <meta property="og:type" content="website" />
+
+  <!-- 🐦 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="🎬 Movie Details - Cinephiles Watch" />
+  <meta name="twitter:description" content="Cinephiles Watch shows you movie cast, screenshots, trailer & more." />
+  <meta name="twitter:image" content="https://yourdomain.com/movie-cover.jpg" />
+
+  <!-- 🎨 Styles -->
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
   <header>
     <h1>🎬 Movie Details</h1>
-    <a href="index.html" style="color: orange;">← Back to Search</a>
+    <a href="index.html" style="color: orange; margin-top: 10px;">← Back to Home</a>
   </header>
 
   <main id="movieDetails" class="movie-detail-container">
     <p>Loading movie...</p>
   </main>
 
+  <!-- 🌗 Theme persistence script -->
+  <script>
+    const theme = localStorage.getItem("theme") || "dark";
+    document.body.className = theme + "-mode";
+  </script>
+
+  <!-- 🎥 Movie data script -->
   <script src="movie.js"></script>
 </body>
 </html>
