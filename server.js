@@ -201,3 +201,29 @@ app.get('/by-genre', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+app.get('/suggest', async (req, res) => {
+  const query = req.query.query;
+  if (!query) return res.json([]);
+
+  try {
+    const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
+      params: {
+        api_key: TMDB_API_KEY,
+        query,
+        language: "en-US",
+        page: 1
+      }
+    });
+
+    const results = response.data.results.map(m => ({
+      id: m.id,
+      title: m.title,
+      year: m.release_date?.split('-')[0] || "N/A"
+    }));
+
+    res.json(results);
+  } catch (err) {
+    console.error("Autocomplete Error:", err.message);
+    res.status(500).json([]);
+  }
+});

@@ -435,3 +435,22 @@ body.dark-mode main {
   background: #121212;
 }
 body.light-mode .movie-card { background: #fff; color: #111; }
+.suggestion-box {
+  position: absolute;
+  background: var(--background);
+  border: 1px solid var(--accent);
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 1000;
+}
+
+.suggestion-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: var(--hover-bg);
+}

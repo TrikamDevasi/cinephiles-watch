@@ -159,3 +159,35 @@ function displayMovies(movies, container) {
     container.appendChild(card);
   });
 }
+const movieSearchInput = document.getElementById("movieSearch");
+const suggestionBox = document.createElement("div");
+suggestionBox.classList.add("suggestion-box");
+movieSearchInput.parentNode.appendChild(suggestionBox);
+
+movieSearchInput.addEventListener("input", async () => {
+  const query = movieSearchInput.value.trim();
+  if (!query || query.length < 2) {
+    suggestionBox.innerHTML = "";
+    return;
+  }
+
+  try {
+    const res = await fetch(`/suggest?query=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    suggestionBox.innerHTML = "";
+
+    data.slice(0, 5).forEach(movie => {
+      const div = document.createElement("div");
+      div.textContent = `${movie.title} (${movie.year})`;
+      div.classList.add("suggestion-item");
+      div.onclick = () => {
+        movieSearchInput.value = movie.title;
+        suggestionBox.innerHTML = "";
+      };
+      suggestionBox.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Suggestion fetch error:", err);
+    suggestionBox.innerHTML = "";
+  }
+});
