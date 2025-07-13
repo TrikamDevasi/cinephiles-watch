@@ -1,7 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("theme") || "dark";
   applyTheme(saved);
-  fetchTrending(); // ✅ Run this after applying theme
+  fetchTrending();
+
+  // Mood event listener setup
+  const moodSelector = document.getElementById("moodSelector");
+  if (moodSelector) {
+    moodSelector.addEventListener("change", fetchMoodMovies);
+  }
 });
 
 // 🔥 Theme toggle logic
@@ -20,21 +26,27 @@ themeToggle.addEventListener("change", () => {
 // 🔍 Movie search
 async function searchMovie() {
   const movieName = document.getElementById('movieSearch').value.trim();
-  if (!movieName) return alert("Please enter a movie name!");
-
   const container = document.getElementById("movieDetails");
+
+  if (!movieName) {
+    alert("Please enter a movie name!");
+    return;
+  }
+
   container.innerHTML = "<p>Searching...</p>";
 
   try {
     const res = await fetch(`/search?name=${encodeURIComponent(movieName)}`);
     const data = await res.json();
-    if (data.length === 0) {
+
+    if (!Array.isArray(data) || data.length === 0) {
       container.innerHTML = "<p>No movies found.</p>";
     } else {
       displayMovies(data);
     }
   } catch (err) {
     container.innerHTML = "<p>Error searching for movie.</p>";
+    console.error(err);
   }
 }
 
@@ -49,10 +61,38 @@ async function fetchTrending() {
     displayMovies(data);
   } catch (err) {
     container.innerHTML = "<p>Error loading trending movies.</p>";
+    console.error(err);
   }
 }
 
-// 🎴 Show movie cards
+// 💡 Mood-based movie recommendations
+async function fetchMoodMovies() {
+  const moodSelector = document.getElementById("moodSelector");
+  const selectedMood = moodSelector.value;
+  const container = document.getElementById("movieDetails");
+
+  if (!selectedMood) {
+    return;
+  }
+
+  container.innerHTML = `<p>Fetching "${selectedMood}" mood movies...</p>`;
+
+  try {
+    const res = await fetch(`/mood?type=${encodeURIComponent(selectedMood)}`);
+    const data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      container.innerHTML = `<p>No "${selectedMood}" mood movies found.</p>`;
+    } else {
+      displayMovies(data);
+    }
+  } catch (err) {
+    container.innerHTML = "<p>Error fetching mood-based movies.</p>";
+    console.error(err);
+  }
+}
+
+// 🧩 Render Movie Cards
 function displayMovies(movies) {
   const container = document.getElementById("movieDetails");
   container.innerHTML = "";

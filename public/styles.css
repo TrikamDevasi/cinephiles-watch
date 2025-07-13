@@ -86,7 +86,8 @@ input:checked + .slider:before {
 }
 
 /* 🔍 Form Styles */
-input {
+input,
+select {
   padding: 12px;
   width: 260px;
   max-width: 90%;
@@ -96,9 +97,11 @@ input {
   font-size: 16px;
   background-color: #2a2a2a;
   color: white;
+  margin-top: 10px;
 }
 
-input::placeholder {
+input::placeholder,
+select option {
   color: #999;
 }
 
@@ -117,6 +120,22 @@ button {
 
 button:hover {
   background-color: darkorange;
+}
+
+/* 🧠 Mood Section */
+.mood-section {
+  margin: 20px 0 10px;
+}
+
+.mood-section label {
+  font-weight: bold;
+  margin-right: 10px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.mood-section select {
+  background-color: #2a2a2a;
 }
 
 /* 🎞 Movie Display Section */
@@ -158,7 +177,8 @@ button:hover {
 
 /* 📱 Responsive */
 @media (max-width: 600px) {
-  input {
+  input,
+  select {
     width: 90%;
   }
 
@@ -192,12 +212,14 @@ body.light-mode button {
   color: white;
 }
 
-body.light-mode input {
+body.light-mode input,
+body.light-mode select {
   background-color: #fff;
   color: #111;
 }
 
-body.light-mode input::placeholder {
+body.light-mode input::placeholder,
+body.light-mode select option {
   color: #666;
 }
 
