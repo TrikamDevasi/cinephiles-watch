@@ -25,23 +25,12 @@ header h1 {
   font-size: 2.5rem;
   font-weight: bold;
   transition: all 0.3s ease;
-}
-
-/* 🌗 Dark Mode Title */
-body.dark-mode header h1 {
   background: linear-gradient(to right, orange, #ff69b4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
-/* 🔆 Light Mode Title */
-body.light-mode header h1 {
-  background: none;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  color: #222;
-}
 
 header p {
   margin-top: 10px;
