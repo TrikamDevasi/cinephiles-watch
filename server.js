@@ -33,19 +33,31 @@ app.get('/trending', async (req, res) => {
   }
 });
 
-// 🔹 Search
+// 🔹 Enhanced Search with Filters
 app.get('/search', async (req, res) => {
   try {
-    const movieName = req.query.name;
-    if (!movieName) return res.status(400).json({ error: "Please provide a movie name!" });
+    const { name, genre, year, language } = req.query;
 
-    const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
-      params: { api_key: TMDB_API_KEY, query: movieName }
-    });
-    res.json(formatMovies(response.data.results));
+    const searchUrl = 'https://api.themoviedb.org/3/search/movie';
+    const params = {
+      api_key: TMDB_API_KEY,
+      query: name || '',
+      include_adult: false,
+      language: language || 'en-US',
+      year: year || undefined
+    };
+
+    const response = await axios.get(searchUrl, { params });
+    let results = response.data.results;
+
+    if (genre) {
+      results = results.filter(m => m.genre_ids.includes(parseInt(genre)));
+    }
+
+    res.json(formatMovies(results));
   } catch (error) {
     console.error("Search Error:", error.message);
-    res.status(500).json({ error: "Failed to search movie." });
+    res.status(500).json({ error: "Failed to search movie with filters." });
   }
 });
 
