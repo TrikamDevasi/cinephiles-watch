@@ -7,38 +7,28 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchUpcoming();
   populateGenres();
 
-  const moodSelector = document.getElementById("moodSelector");
-  if (moodSelector) {
-    moodSelector.addEventListener("change", fetchMoodMovies);
-  }
+  document.getElementById("themeToggle").addEventListener("change", () => {
+    applyTheme(themeToggle.checked ? "light" : "dark");
+  });
 
-  const searchForm = document.getElementById("searchForm");
-  if (searchForm) {
-    searchForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      applyFilters(); // Reuse the same function
-    });
-  }
+  document.getElementById("moodSelector")?.addEventListener("change", fetchMoodMovies);
+  document.getElementById("searchForm")?.addEventListener("submit", handleSearch);
+  document.querySelector("button[onclick='applyFilters()']")?.addEventListener("click", handleSearch);
 });
-
-// 🌗 Theme Toggle
-const themeToggle = document.getElementById("themeToggle");
 
 function applyTheme(mode) {
   document.body.className = mode + "-mode";
-  themeToggle.checked = mode === "light";
+  document.getElementById("themeToggle").checked = mode === "light";
   localStorage.setItem("theme", mode);
 }
 
-themeToggle.addEventListener("change", () => {
-  applyTheme(themeToggle.checked ? "light" : "dark");
-});
+function clearSections() {
+  ["trendingSection", "topRatedSection", "upcomingSection", "searchResults", "movieDetails"]
+    .forEach(id => document.getElementById(id).innerHTML = "");
+}
 
-// 🎬 Trending
 async function fetchTrending() {
   const container = document.getElementById("trendingSection");
-  if (!container) return;
-
   container.innerHTML = "<p>Loading trending movies...</p>";
   try {
     const res = await fetch("/trending");
@@ -47,15 +37,11 @@ async function fetchTrending() {
     displayMovies(data, container);
   } catch (err) {
     container.innerHTML = "<p>⚠️ Error loading trending movies.</p>";
-    console.error(err);
   }
 }
 
-// 🏆 Top Rated
 async function fetchTopRated() {
   const container = document.getElementById("topRatedSection");
-  if (!container) return;
-
   container.innerHTML = "<p>Loading top-rated movies...</p>";
   try {
     const res = await fetch("/top-rated");
@@ -64,15 +50,11 @@ async function fetchTopRated() {
     displayMovies(data, container);
   } catch (err) {
     container.innerHTML = "<p>⚠️ Error loading top-rated movies.</p>";
-    console.error(err);
   }
 }
 
-// ⏳ Upcoming
 async function fetchUpcoming() {
   const container = document.getElementById("upcomingSection");
-  if (!container) return;
-
   container.innerHTML = "<p>Loading upcoming movies...</p>";
   try {
     const res = await fetch("/upcoming");
@@ -81,43 +63,11 @@ async function fetchUpcoming() {
     displayMovies(data, container);
   } catch (err) {
     container.innerHTML = "<p>⚠️ Error loading upcoming movies.</p>";
-    console.error(err);
   }
 }
 
-// 💡 Mood-based Fetch
-async function fetchMoodMovies() {
-  const moodSelector = document.getElementById("moodSelector");
-  const selectedMood = moodSelector.value;
-  const container = document.getElementById("movieDetails");
-
-  if (!selectedMood) return;
-
-  container.innerHTML = `<p>🎭 Fetching "${selectedMood}" mood movies...</p>`;
-  clearSections();
-
-  try {
-    const res = await fetch(`/mood?type=${encodeURIComponent(selectedMood)}`);
-    const data = await res.json();
-
-    container.innerHTML = "";
-    if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = `<p>❌ No "${selectedMood}" movies found.</p>`;
-    } else {
-      displayMovies(data, container);
-      container.scrollIntoView({ behavior: "smooth" });
-    }
-  } catch (err) {
-    container.innerHTML = "<p>⚠️ Error fetching mood-based movies.</p>";
-    console.error(err);
-  }
-}
-
-// 🎭 Genre Filter Fill
 async function populateGenres() {
   const genreSelect = document.getElementById("genreFilter");
-  if (!genreSelect) return;
-
   try {
     const res = await fetch("/genres");
     const genres = await res.json();
@@ -132,49 +82,43 @@ async function populateGenres() {
   }
 }
 
-// 🧹 Clear Other Sections
-function clearSections() {
-  const sections = ["trendingSection", "topRatedSection", "upcomingSection", "searchResults", "movieDetails"];
-  sections.forEach(id => {
-    const section = document.getElementById(id);
-    if (section) section.innerHTML = "";
-  });
+async function fetchMoodMovies() {
+  const mood = document.getElementById("moodSelector").value;
+  const container = document.getElementById("movieDetails");
+  if (!mood) return;
+
+  clearSections();
+  container.innerHTML = `<p>🎭 Fetching "${mood}" mood movies...</p>`;
+  try {
+    const res = await fetch(`/mood?type=${encodeURIComponent(mood)}`);
+    const data = await res.json();
+    container.innerHTML = "";
+    if (!data.length) {
+      container.innerHTML = "<p>❌ No movies found for this mood.</p>";
+    } else {
+      displayMovies(data, container);
+      container.scrollIntoView({ behavior: "smooth" });
+    }
+  } catch (err) {
+    container.innerHTML = "<p>⚠️ Error fetching mood-based movies.</p>";
+  }
 }
 
-// 🎴 Display Movies
-function displayMovies(movies, container) {
-  movies.forEach(movie => {
-    const card = document.createElement("div");
-    card.className = "movie-card";
-    card.onclick = () => {
-      window.location.href = `movie.html?id=${movie.id}`;
-    };
+async function handleSearch(e) {
+  if (e) e.preventDefault();
 
-    card.innerHTML = `
-      <img src="${movie.poster || 'https://via.placeholder.com/250x375?text=No+Image'}" alt="${movie.title}">
-      <h3>${movie.title} (${movie.year || ''})</h3>
-      <p><strong>⭐ Rating:</strong> ${movie.rating || 'N/A'}</p>
-      <p>${movie.description ? movie.description.slice(0, 100) + '...' : ''}</p>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// ✅ Apply Filters Button Logic
-function applyFilters() {
+  const movieName = document.getElementById("movieSearch").value.trim();
   const genre = document.getElementById("genreFilter").value;
   const year = document.getElementById("yearFilter").value;
   const language = document.getElementById("languageFilter").value;
-  const movieName = document.getElementById("movieSearch").value.trim();
   const container = document.getElementById("searchResults");
 
   if (!movieName && !genre && !year && !language) {
-    alert("Please select at least one filter or enter a movie name!");
+    alert("Please enter a movie name or apply a filter!");
     return;
   }
 
-  container.innerHTML = "<p>🎛️ Applying filters...</p>";
+  container.innerHTML = "<p>🔍 Searching...</p>";
   clearSections();
 
   const query = new URLSearchParams();
@@ -183,19 +127,35 @@ function applyFilters() {
   if (year) query.append("year", year);
   if (language) query.append("language", language);
 
-  fetch(`/search?${query.toString()}`)
-    .then(res => res.json())
-    .then(data => {
-      if (!Array.isArray(data) || data.length === 0) {
-        container.innerHTML = "<p>❌ No matching movies found.</p>";
-      } else {
-        container.innerHTML = "";
-        displayMovies(data, container);
-        container.scrollIntoView({ behavior: "smooth" });
-      }
-    })
-    .catch(err => {
-      container.innerHTML = "<p>⚠️ Error applying filters.</p>";
-      console.error(err);
-    });
+  try {
+    const res = await fetch(`/search?${query.toString()}`);
+    const data = await res.json();
+
+    container.innerHTML = "";
+    if (!data.length) {
+      container.innerHTML = "<p>❌ No movies found.</p>";
+    } else {
+      displayMovies(data, container);
+      container.scrollIntoView({ behavior: "smooth" });
+    }
+  } catch (err) {
+    container.innerHTML = "<p>⚠️ Error during search.</p>";
+  }
+}
+
+function displayMovies(movies, container) {
+  movies.forEach(movie => {
+    const card = document.createElement("div");
+    card.className = "movie-card";
+    card.onclick = () => {
+      window.location.href = `movie.html?id=${movie.id}`;
+    };
+    card.innerHTML = `
+      <img src="${movie.poster || 'https://via.placeholder.com/250x375?text=No+Image'}" alt="${movie.title}">
+      <h3>${movie.title} (${movie.year || ''})</h3>
+      <p><strong>⭐ Rating:</strong> ${movie.rating || 'N/A'}</p>
+      <p>${movie.description ? movie.description.slice(0, 100) + '...' : ''}</p>
+    `;
+    container.appendChild(card);
+  });
 }
