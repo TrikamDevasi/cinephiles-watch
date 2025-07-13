@@ -1,4 +1,5 @@
 window.onload = fetchTrending;
+
 async function fetchTrending() {
     const container = document.getElementById("movieDetails");
     container.innerHTML = "<p>Loading trending movies...</p>";
@@ -39,6 +40,9 @@ function displayMovies(movies) {
     movies.forEach(movie => {
         const card = document.createElement("div");
         card.className = "movie-card";
+        card.onclick = () => {
+            window.location.href = `movie.html?id=${movie.id}`;
+        };
         card.innerHTML = `
             <img src="${movie.poster}" alt="${movie.title}">
             <h3>${movie.title} (${movie.year})</h3>
