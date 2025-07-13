@@ -209,6 +209,32 @@ button:hover {
   font-weight: bold;
 }
 
+/* 🧱 Reusable Section Headings */
+main h2 {
+  margin-top: 40px;
+  font-size: 1.8rem;
+  color: orange;
+  border-bottom: 2px solid orange;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* 🧱 Movie Grid Layout for Sections */
+.movie-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* 🪟 Section Spacing */
+section {
+  margin: 40px 10px;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
 /* 📱 Responsive */
 @media (max-width: 600px) {
   input,

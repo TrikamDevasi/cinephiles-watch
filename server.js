@@ -8,61 +8,48 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY || "74ce9a72bf119c55eb9f81025b4601
 
 app.use(express.static("public"));
 
-// 🔹 Trending movies route
+// 🔁 Reusable function to format movies
+function formatMovies(apiResults) {
+  return apiResults.map(movie => ({
+    id: movie.id,
+    title: movie.title,
+    year: movie.release_date?.split('-')[0] || 'Unknown',
+    poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
+    description: movie.overview || 'No description available.',
+    rating: movie.vote_average || 'N/A'
+  }));
+}
+
+// 🔹 Trending
 app.get('/trending', async (req, res) => {
   try {
     const response = await axios.get('https://api.themoviedb.org/3/trending/movie/week', {
       params: { api_key: TMDB_API_KEY }
     });
-
-    const movies = response.data.results.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      year: movie.release_date?.split('-')[0] || 'Unknown',
-      poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
-      description: movie.overview || 'No description available.',
-      rating: movie.vote_average || 'N/A'
-    }));
-
-    res.json(movies);
+    res.json(formatMovies(response.data.results));
   } catch (error) {
-    console.error("Trending Fetch Error:", error.message);
+    console.error("Trending Error:", error.message);
     res.status(500).json({ error: "Failed to fetch trending movies." });
   }
 });
 
-// 🔹 Search movies route
+// 🔹 Search
 app.get('/search', async (req, res) => {
   try {
     const movieName = req.query.name;
-    if (!movieName) {
-      return res.status(400).json({ error: "Please provide a movie name!" });
-    }
+    if (!movieName) return res.status(400).json({ error: "Please provide a movie name!" });
 
     const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
-      params: {
-        api_key: TMDB_API_KEY,
-        query: movieName
-      }
+      params: { api_key: TMDB_API_KEY, query: movieName }
     });
-
-    const movies = response.data.results.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      year: movie.release_date?.split('-')[0] || 'Unknown',
-      poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
-      description: movie.overview || 'No description available.',
-      rating: movie.vote_average || 'N/A'
-    }));
-
-    res.json(movies);
+    res.json(formatMovies(response.data.results));
   } catch (error) {
     console.error("Search Error:", error.message);
     res.status(500).json({ error: "Failed to search movie." });
   }
 });
 
-// 🔹 Mood-based recommendation route (Mocked until TMDb supports mood directly)
+// 🔹 Mood-based Recommendation
 const moodMap = {
   happy: ["Comedy", "Adventure", "Music", "Family"],
   emotional: ["Drama"],
@@ -99,23 +86,14 @@ app.get('/mood', async (req, res) => {
       }
     });
 
-    const movies = discoverRes.data.results.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      year: movie.release_date?.split('-')[0] || 'Unknown',
-      poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
-      description: movie.overview || 'No description available.',
-      rating: movie.vote_average || 'N/A'
-    }));
-
-    res.json(movies);
+    res.json(formatMovies(discoverRes.data.results));
   } catch (error) {
     console.error("Mood Fetch Error:", error.message);
     res.status(500).json({ error: "Failed to fetch mood-based movies." });
   }
 });
 
-// 🔹 Movie details route
+// 🔹 Movie Details
 app.get('/movie/:id', async (req, res) => {
   const movieId = req.params.id;
 
@@ -143,8 +121,34 @@ app.get('/movie/:id', async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Error fetching movie details:", err.message);
+    console.error("Movie Details Error:", err.message);
     res.status(500).json({ error: "Failed to load movie details." });
+  }
+});
+
+// 🔹 Top Rated Movies
+app.get('/top-rated', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.themoviedb.org/3/movie/top_rated', {
+      params: { api_key: TMDB_API_KEY, language: 'en-US', page: 1 }
+    });
+    res.json(formatMovies(response.data.results));
+  } catch (error) {
+    console.error("Top Rated Fetch Error:", error.message);
+    res.status(500).json({ error: "Failed to fetch top-rated movies." });
+  }
+});
+
+// 🔹 Upcoming Movies
+app.get('/upcoming', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.themoviedb.org/3/movie/upcoming', {
+      params: { api_key: TMDB_API_KEY, language: 'en-US', page: 1 }
+    });
+    res.json(formatMovies(response.data.results));
+  } catch (error) {
+    console.error("Upcoming Fetch Error:", error.message);
+    res.status(500).json({ error: "Failed to fetch upcoming movies." });
   }
 });
 
