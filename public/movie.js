@@ -1,5 +1,3 @@
-const apiKey = "74ce9a72bf119c55eb9f81025b4601d1";
-
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get("id");
 
@@ -7,17 +5,8 @@ const movieDetailsDiv = document.getElementById("movieDetails");
 
 async function loadMovieDetails() {
   try {
-    const [detailsRes, creditsRes, imagesRes, videoRes] = await Promise.all([
-      fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=en-US`),
-      fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${apiKey}`),
-      fetch(`https://api.themoviedb.org/3/movie/${movieId}/images?api_key=${apiKey}`),
-      fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`)
-    ]);
-
-    const details = await detailsRes.json();
-    const credits = await creditsRes.json();
-    const images = await imagesRes.json();
-    const videos = await videoRes.json();
+    const res = await fetch(`/movie/${movieId}`);
+    const { details, credits, images, videos } = await res.json();
 
     const castList = credits.cast.slice(0, 6).map(c => c.name).join(", ");
     const screenshots = images.backdrops.slice(0, 3).map(i => `https://image.tmdb.org/t/p/w500${i.file_path}`);

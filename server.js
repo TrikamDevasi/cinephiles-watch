@@ -64,3 +64,34 @@ app.get('/search', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+app.get('/movie/:id', async (req, res) => {
+    const movieId = req.params.id;
+
+    try {
+        const [detailsRes, creditsRes, imagesRes, videosRes] = await Promise.all([
+            axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+                params: { api_key: TMDB_API_KEY, language: 'en-US' }
+            }),
+            axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+                params: { api_key: TMDB_API_KEY }
+            }),
+            axios.get(`https://api.themoviedb.org/3/movie/${movieId}/images`, {
+                params: { api_key: TMDB_API_KEY }
+            }),
+            axios.get(`https://api.themoviedb.org/3/movie/${movieId}/videos`, {
+                params: { api_key: TMDB_API_KEY }
+            }),
+        ]);
+
+        res.json({
+            details: detailsRes.data,
+            credits: creditsRes.data,
+            images: imagesRes.data,
+            videos: videosRes.data
+        });
+
+    } catch (err) {
+        console.error("Error fetching movie details:", err.message);
+        res.status(500).json({ error: "Failed to load movie details." });
+    }
+});
