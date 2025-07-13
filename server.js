@@ -16,6 +16,7 @@ app.get('/trending', async (req, res) => {
         });
 
         const movies = response.data.results.map(movie => ({
+            id: movie.id,
             title: movie.title,
             year: movie.release_date?.split('-')[0] || 'Unknown',
             poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
@@ -46,6 +47,7 @@ app.get('/search', async (req, res) => {
         });
 
         const movies = response.data.results.map(movie => ({
+            id: movie.id,
             title: movie.title,
             year: movie.release_date?.split('-')[0] || 'Unknown',
             poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}` : '',
@@ -60,10 +62,7 @@ app.get('/search', async (req, res) => {
     }
 });
 
-// ✅ Start server
-app.listen(PORT, () => {
-    console.log(`✅ Server running at http://localhost:${PORT}`);
-});
+// 🔹 Movie details route (IMPORTANT: above app.listen!)
 app.get('/movie/:id', async (req, res) => {
     const movieId = req.params.id;
 
@@ -94,4 +93,9 @@ app.get('/movie/:id', async (req, res) => {
         console.error("Error fetching movie details:", err.message);
         res.status(500).json({ error: "Failed to load movie details." });
     }
+});
+
+// ✅ Start server (must come LAST!)
+app.listen(PORT, () => {
+    console.log(`✅ Server running at http://localhost:${PORT}`);
 });
