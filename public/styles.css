@@ -13,17 +13,78 @@ header {
     padding: 30px 20px 10px;
     background-color: #1f1f1f;
     border-bottom: 2px solid orange;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.switch {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 25px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 3.5px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: orange;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
 }
 
 header h1 {
     margin: 0;
     font-size: 2.5rem;
+    background: linear-gradient(to right, orange, #ff69b4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 header p {
     margin-top: 10px;
     font-size: 1.2rem;
     color: #ccc;
+}
+
+/* Light Mode Override for Header Text */
+body.light-mode header h1 {
+    background: none;
+    -webkit-text-fill-color: #111;
+    color: #111;
 }
 
 /* Form Elements */
@@ -62,28 +123,6 @@ button:hover {
 
 /* Movie Details Section */
 #movieDetails {
-    margin-top: 30px;
-    padding: 20px;
-}
-
-#movieDetails img {
-    width: 200px;
-    border-radius: 10px;
-    margin-top: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
-/* Optional: Add basic responsive design */
-@media (max-width: 600px) {
-    input {
-        width: 90%;
-    }
-
-    #movieDetails img {
-        width: 90%;
-    }
-}
-#movieDetails {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -111,66 +150,42 @@ button:hover {
     border-radius: 8px;
     margin-bottom: 10px;
 }
-/* 🌗 Toggle Switch Styling */
-.switch {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: inline-block;
-  width: 50px;
-  height: 25px;
+
+#movieDetails img {
+    width: 200px;
+    border-radius: 10px;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+/* Responsive Design */
+@media (max-width: 600px) {
+    input {
+        width: 90%;
+    }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0;
-  right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 25px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 4px;
-  bottom: 3.5px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: orange;
-}
-
-input:checked + .slider:before {
-  transform: translateX(24px);
+    #movieDetails img {
+        width: 90%;
+    }
 }
 
 /* 🌙 Dark & Light Mode */
 body.dark-mode {
-  background-color: #121212;
-  color: white;
+    background-color: #121212;
+    color: white;
 }
+
 body.light-mode {
-  background-color: #f0f0f0;
-  color: #111;
+    background-color: #f0f0f0;
+    color: #111;
 }
+
 body.light-mode .movie-card {
-  background-color: white;
-  color: #111;
+    background-color: white;
+    color: #111;
 }
+
 body.light-mode button {
-  background-color: #222;
-  color: white;
+    background-color: #222;
+    color: white;
 }
