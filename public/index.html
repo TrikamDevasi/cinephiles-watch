@@ -1,27 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinephiles Watch</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <h1>Cinephiles Watch 🎬</h1>
-        <p>Your Ultimate Streaming Guide</p>
-    </header>
-
-    <main>
-        <input type="text" id="movieSearch" placeholder="Enter a movie name..." />
-        <button onclick="searchMovie()">Search</button>
-
-        <div id="movieDetails"></div>
-    </main>
-
-    <script src="script.js"></script>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +8,11 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <header>
+    <header><label class="switch">
+  <input type="checkbox" id="themeToggle">
+  <span class="slider round"></span>
+</label>
+
         <h1>Cinephiles Watch 🎬</h1>
         <p>Your Ultimate Streaming Guide</p>
     </header>
