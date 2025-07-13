@@ -152,6 +152,40 @@ app.get('/upcoming', async (req, res) => {
   }
 });
 
+// 🔹 Genres List
+app.get('/genres', async (req, res) => {
+  try {
+    const response = await axios.get(`https://api.themoviedb.org/3/genre/movie/list`, {
+      params: { api_key: TMDB_API_KEY }
+    });
+    res.json(response.data.genres);
+  } catch (err) {
+    console.error("Genre List Error:", err.message);
+    res.status(500).json({ error: "Failed to fetch genres" });
+  }
+});
+
+// 🔹 Movies By Genre
+app.get('/by-genre', async (req, res) => {
+  const genreId = req.query.id;
+  if (!genreId) return res.status(400).json({ error: "Missing genre ID" });
+
+  try {
+    const response = await axios.get('https://api.themoviedb.org/3/discover/movie', {
+      params: {
+        api_key: TMDB_API_KEY,
+        with_genres: genreId,
+        sort_by: 'popularity.desc'
+      }
+    });
+
+    res.json(formatMovies(response.data.results));
+  } catch (err) {
+    console.error("Movies by Genre Error:", err.message);
+    res.status(500).json({ error: "Failed to fetch movies by genre" });
+  }
+});
+
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
