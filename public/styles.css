@@ -177,7 +177,7 @@ button:hover {
   margin-bottom: 10px;
 }
 
-/* 📽 Movie Grid */
+/* 🎝 Movie Grid */
 .movie-grid {
   display: flex;
   flex-wrap: wrap;
@@ -196,28 +196,28 @@ button:hover {
 }
 
 /* ✨ Autocomplete Suggestion Box */
-.autocomplete-list {
+.suggestion-box {
   position: absolute;
-  background: #1e1e1e;
-  border: 1px solid #555;
-  list-style: none;
-  padding: 0;
-  margin: 5px 0 0;
-  width: 100%;
-  z-index: 1000;
+  background-color: #1e1e1e;
+  color: white;
+  border: 1px solid orange;
   max-height: 200px;
   overflow-y: auto;
+  width: 100%;
+  z-index: 1000;
   border-radius: 6px;
   text-align: left;
+  margin-top: 5px;
+  box-shadow: 0 4px 10px rgba(255, 165, 0, 0.4);
 }
 
-.autocomplete-item {
+.suggestion-item {
   padding: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
-.autocomplete-item:hover {
+.suggestion-item:hover {
   background-color: #333;
 }
 
@@ -321,13 +321,15 @@ body.light-mode .filter-section label {
   color: #ff5722;
 }
 
-body.light-mode .autocomplete-list {
-  background-color: white;
-  color: black;
+body.light-mode .suggestion-box {
+  background-color: #ffffff;
+  color: #111;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-body.light-mode .autocomplete-item:hover {
-  background-color: #eee;
+body.light-mode .suggestion-item:hover {
+  background-color: #f0f0f0;
 }
 
 /* 🔄 Animation */
