@@ -139,54 +139,22 @@ button:hover {
   background-color: #2a2a2a;
 }
 
-/* 🎛 Filter Section Styles */
-.filters-section {
-  margin: 20px auto;
-  padding: 10px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  border-top: 1px solid #444;
-  border-bottom: 1px solid #444;
-}
-
-.filters-section label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-  color: orange;
-}
-
-.filter-group {
+/* 🎛 Filter Section */
+.filter-section {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
 }
 
-/* Responsive filters */
-@media (max-width: 600px) {
-  .filters-section {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .filter-group {
-    width: 90%;
-    text-align: center;
-    align-items: center;
-  }
+.filter-section label {
+  font-weight: bold;
+  color: orange;
+  margin-top: 10px;
 }
 
-/* 🎞 Movie Display Section */
-#movieDetails {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-}
-
+/* 🎞 Movie Cards */
 .movie-card {
   background-color: #1e1e1e;
   border-radius: 10px;
@@ -209,11 +177,48 @@ button:hover {
   margin-bottom: 10px;
 }
 
-#movieDetails img {
-  width: 200px;
-  border-radius: 10px;
-  margin-top: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+/* 📽 Movie Grid */
+.movie-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+#movieDetails,
+#searchResults {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* ✨ Autocomplete Suggestion Box */
+.autocomplete-list {
+  position: absolute;
+  background: #1e1e1e;
+  border: 1px solid #555;
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0;
+  width: 100%;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.autocomplete-item {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.autocomplete-item:hover {
+  background-color: #333;
 }
 
 /* 🎬 Movie Detail Page */
@@ -239,7 +244,7 @@ button:hover {
   line-height: 1.5;
 }
 
-/* 🌈 Gradient Heading Class */
+/* 🌈 Gradient Headings */
 .gradient-heading {
   background: linear-gradient(to right, orange, #ff69b4);
   -webkit-background-clip: text;
@@ -248,7 +253,6 @@ button:hover {
   font-weight: bold;
 }
 
-/* 🧱 Reusable Section Headings */
 main h2 {
   margin-top: 40px;
   font-size: 1.8rem;
@@ -258,33 +262,13 @@ main h2 {
   padding-bottom: 5px;
 }
 
-/* 🧱 Movie Grid Layout for Sections */
-.movie-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-}
-
-/* 🪟 Section Spacing */
-section {
-  margin: 40px 10px;
-  border-top: 1px solid #333;
-  padding-top: 20px;
-}
-
-/* 📱 Responsive */
+/* 📱 Responsive Design */
 @media (max-width: 600px) {
   input,
   select,
   button {
     width: 90%;
     margin-top: 8px;
-  }
-
-  #movieDetails img {
-    width: 90%;
   }
 
   .movie-card {
@@ -294,9 +278,14 @@ section {
   .movie-detail-container {
     padding: 10px;
   }
+
+  .autocomplete-list {
+    width: 90%;
+    left: 5%;
+  }
 }
 
-/* 🌗 Dark/Light Mode Support */
+/* 🌗 Light & Dark Modes */
 body.dark-mode {
   background-color: #121212;
   color: white;
@@ -328,129 +317,22 @@ body.light-mode select option {
   color: #666;
 }
 
-body.light-mode .filters-section {
-  border-color: #ddd;
-}
-
-body.light-mode .filters-section label {
+body.light-mode .filter-section label {
   color: #ff5722;
 }
 
-/* ✅ Ensure subtitle is white in both modes */
-body.light-mode header p,
-body.dark-mode header p {
-  color: white;
+body.light-mode .autocomplete-list {
+  background-color: white;
+  color: black;
 }
 
-/* 🔍 Search Results Section Styling */
-#searchResults {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px;
-  min-height: 150px; /* Prevent layout shift */
-  opacity: 0;
-  animation: fadeIn 0.5s forwards;
+body.light-mode .autocomplete-item:hover {
+  background-color: #eee;
 }
 
-/* Reuse movie-card styles from #movieDetails */
-#searchResults .movie-card {
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  width: 250px;
-  padding: 15px;
-  color: white;
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease;
-  cursor: pointer;
-}
-
-#searchResults .movie-card:hover {
-  transform: scale(1.03);
-}
-
-#searchResults .movie-card img {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-/* Fade-in animation */
+/* 🔄 Animation */
 @keyframes fadeIn {
   to {
     opacity: 1;
   }
-}
-
-/* Responsive fix for searchResults */
-@media (max-width: 600px) {
-  #searchResults .movie-card {
-    width: 90%;
-  }
-}
-/* Hero Section */
-.main-hero {
-  background: url('your-banner.jpg') center/cover no-repeat;
-  padding: 60px 20px;
-  color: #fff;
-  text-align: center;
-}
-.main-hero h2 { font-size: 2.5rem; margin-bottom: 10px; }
-.main-hero p { font-size: 1.2rem; }
-
-/* Movie Cards */
-.movie-card {
-  border-radius: 8px;
-  background: #1e1e1e;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.7);
-}
-
-/* Filters Banner */
-.filter-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  background: #1a1a1a;
-  padding: 12px 20px;
-  margin-bottom: 20px;
-  border-radius: 6px;
-}
-.filter-toolbar label,
-.filter-toolbar select,
-.filter-toolbar button {
-  margin: 4px;
-}
-
-/* Dark Mode adjustments */
-body.dark-mode main {
-  background: #121212;
-}
-body.light-mode .movie-card { background: #fff; color: #111; }
-.suggestion-box {
-  position: absolute;
-  background: var(--background);
-  border: 1px solid var(--accent);
-  max-height: 200px;
-  overflow-y: auto;
-  width: 100%;
-  z-index: 1000;
-}
-
-.suggestion-item {
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.suggestion-item:hover {
-  background: var(--hover-bg);
 }

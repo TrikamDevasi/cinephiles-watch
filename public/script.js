@@ -14,19 +14,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("moodSelector")?.addEventListener("change", fetchMoodMovies);
   document.getElementById("searchForm")?.addEventListener("submit", handleSearch);
   document.querySelector("button[onclick='applyFilters()']")?.addEventListener("click", handleSearch);
+
+  setupAutocomplete();
 });
 
+// 🌗 Apply Theme
 function applyTheme(mode) {
   document.body.className = mode + "-mode";
   document.getElementById("themeToggle").checked = mode === "light";
   localStorage.setItem("theme", mode);
 }
 
+// 🧹 Clear UI Sections
 function clearSections() {
   ["trendingSection", "topRatedSection", "upcomingSection", "searchResults", "movieDetails"]
     .forEach(id => document.getElementById(id).innerHTML = "");
 }
 
+// 🔥 Trending
 async function fetchTrending() {
   const container = document.getElementById("trendingSection");
   container.innerHTML = "<p>Loading trending movies...</p>";
@@ -35,11 +40,12 @@ async function fetchTrending() {
     const data = await res.json();
     container.innerHTML = "";
     displayMovies(data, container);
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>⚠️ Error loading trending movies.</p>";
   }
 }
 
+// 🏆 Top Rated
 async function fetchTopRated() {
   const container = document.getElementById("topRatedSection");
   container.innerHTML = "<p>Loading top-rated movies...</p>";
@@ -48,11 +54,12 @@ async function fetchTopRated() {
     const data = await res.json();
     container.innerHTML = "";
     displayMovies(data, container);
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>⚠️ Error loading top-rated movies.</p>";
   }
 }
 
+// 📅 Upcoming
 async function fetchUpcoming() {
   const container = document.getElementById("upcomingSection");
   container.innerHTML = "<p>Loading upcoming movies...</p>";
@@ -61,11 +68,12 @@ async function fetchUpcoming() {
     const data = await res.json();
     container.innerHTML = "";
     displayMovies(data, container);
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>⚠️ Error loading upcoming movies.</p>";
   }
 }
 
+// 🎭 Genre List
 async function populateGenres() {
   const genreSelect = document.getElementById("genreFilter");
   try {
@@ -82,6 +90,7 @@ async function populateGenres() {
   }
 }
 
+// 😄 Mood Movies
 async function fetchMoodMovies() {
   const mood = document.getElementById("moodSelector").value;
   const container = document.getElementById("movieDetails");
@@ -99,11 +108,12 @@ async function fetchMoodMovies() {
       displayMovies(data, container);
       container.scrollIntoView({ behavior: "smooth" });
     }
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>⚠️ Error fetching mood-based movies.</p>";
   }
 }
 
+// 🔍 Search + Filters
 async function handleSearch(e) {
   if (e) e.preventDefault();
 
@@ -138,11 +148,12 @@ async function handleSearch(e) {
       displayMovies(data, container);
       container.scrollIntoView({ behavior: "smooth" });
     }
-  } catch (err) {
+  } catch {
     container.innerHTML = "<p>⚠️ Error during search.</p>";
   }
 }
 
+// 🎴 Render Movies
 function displayMovies(movies, container) {
   movies.forEach(movie => {
     const card = document.createElement("div");
@@ -159,35 +170,39 @@ function displayMovies(movies, container) {
     container.appendChild(card);
   });
 }
-const movieSearchInput = document.getElementById("movieSearch");
-const suggestionBox = document.createElement("div");
-suggestionBox.classList.add("suggestion-box");
-movieSearchInput.parentNode.appendChild(suggestionBox);
 
-movieSearchInput.addEventListener("input", async () => {
-  const query = movieSearchInput.value.trim();
-  if (!query || query.length < 2) {
-    suggestionBox.innerHTML = "";
-    return;
-  }
+// 🧠 Autocomplete Suggestions
+function setupAutocomplete() {
+  const input = document.getElementById("movieSearch");
+  const suggestionBox = document.createElement("ul");
+  suggestionBox.id = "autocompleteList";
+  suggestionBox.className = "autocomplete-list";
+  input.parentNode.appendChild(suggestionBox);
 
-  try {
-    const res = await fetch(`/suggest?query=${encodeURIComponent(query)}`);
-    const data = await res.json();
+  input.addEventListener("input", async function () {
+    const query = this.value.trim();
     suggestionBox.innerHTML = "";
+    if (query.length < 2) return;
 
-    data.slice(0, 5).forEach(movie => {
-      const div = document.createElement("div");
-      div.textContent = `${movie.title} (${movie.year})`;
-      div.classList.add("suggestion-item");
-      div.onclick = () => {
-        movieSearchInput.value = movie.title;
-        suggestionBox.innerHTML = "";
-      };
-      suggestionBox.appendChild(div);
-    });
-  } catch (err) {
-    console.error("Suggestion fetch error:", err);
-    suggestionBox.innerHTML = "";
-  }
-});
+    try {
+      const res = await fetch(`/search?name=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      if (Array.isArray(data) && data.length > 0) {
+        data.slice(0, 5).forEach(movie => {
+          const li = document.createElement("li");
+          li.textContent = `${movie.title} (${movie.year})`;
+          li.classList.add("autocomplete-item");
+          li.onclick = () => {
+            input.value = movie.title;
+            suggestionBox.innerHTML = "";
+            document.getElementById("searchForm").dispatchEvent(new Event("submit"));
+          };
+          suggestionBox.appendChild(li);
+        });
+      }
+    } catch (err) {
+      console.error("Autocomplete fetch error:", err);
+    }
+  });
+}
