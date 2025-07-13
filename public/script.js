@@ -194,4 +194,35 @@ function displayMovies(movies, container) {
 
     container.appendChild(card);
   });
-}
+}// ✅ Apply Filters Button Logic
+function applyFilters() {
+  const genre = document.getElementById("genreFilter").value;
+  const year = document.getElementById("yearFilter").value;
+  const language = document.getElementById("languageFilter").value;
+  const movieName = document.getElementById("movieSearch").value.trim();
+  const container = document.getElementById("searchResults");
+
+  if (!movieName && !genre && !year && !language) {
+    alert("Please select at least one filter or enter a movie name!");
+    return;
+  }
+
+  container.innerHTML = "<p>🎛️ Applying filters...</p>";
+  clearSections();
+
+  const query = new URLSearchParams();
+  if (movieName) query.append("name", movieName);
+  if (genre) query.append("genre", genre);
+  if (year) query.append("year", year);
+  if (language) query.append("language", language);
+
+  fetch(`/search?${query.toString()}`)
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        container.innerHTML = "<p>❌ No matching movies found.</p>";
+      } else {
+        container.innerHTML = "";
+        displayMovies(data, container);
+        container.scrollIntoView({ behavior: "s
+
