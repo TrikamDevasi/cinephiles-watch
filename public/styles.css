@@ -139,6 +139,45 @@ button:hover {
   background-color: #2a2a2a;
 }
 
+/* 🎛 Filter Section Styles */
+.filters-section {
+  margin: 20px auto;
+  padding: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #444;
+}
+
+.filters-section label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: orange;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+/* Responsive filters */
+@media (max-width: 600px) {
+  .filters-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filter-group {
+    width: 90%;
+    text-align: center;
+    align-items: center;
+  }
+}
+
 /* 🎞 Movie Display Section */
 #movieDetails {
   display: flex;
@@ -289,8 +328,65 @@ body.light-mode select option {
   color: #666;
 }
 
+body.light-mode .filters-section {
+  border-color: #ddd;
+}
+
+body.light-mode .filters-section label {
+  color: #ff5722;
+}
+
 /* ✅ Ensure subtitle is white in both modes */
 body.light-mode header p,
 body.dark-mode header p {
   color: white;
+}
+
+/* 🔍 Search Results Section Styling */
+#searchResults {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  min-height: 150px; /* Prevent layout shift */
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+/* Reuse movie-card styles from #movieDetails */
+#searchResults .movie-card {
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  width: 250px;
+  padding: 15px;
+  color: white;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+#searchResults .movie-card:hover {
+  transform: scale(1.03);
+}
+
+#searchResults .movie-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive fix for searchResults */
+@media (max-width: 600px) {
+  #searchResults .movie-card {
+    width: 90%;
+  }
 }

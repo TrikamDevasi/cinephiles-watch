@@ -5,10 +5,54 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchTrending();
   fetchTopRated();
   fetchUpcoming();
+  populateGenres();
 
   const moodSelector = document.getElementById("moodSelector");
   if (moodSelector) {
     moodSelector.addEventListener("change", fetchMoodMovies);
+  }
+
+  const searchForm = document.getElementById("searchForm");
+  if (searchForm) {
+    searchForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const movieName = document.getElementById("movieSearch").value.trim();
+      const genre = document.getElementById("genreFilter").value;
+      const year = document.getElementById("yearFilter").value;
+      const rating = document.getElementById("ratingFilter").value;
+      const container = document.getElementById("searchResults");
+
+      if (!movieName && !genre && !year && !rating) {
+        alert("Please enter a movie name or select a filter!");
+        return;
+      }
+
+      container.innerHTML = "<p>🔍 Searching...</p>";
+      clearSections();
+
+      try {
+        const query = new URLSearchParams();
+        if (movieName) query.append("name", movieName);
+        if (genre) query.append("genre", genre);
+        if (year) query.append("year", year);
+        if (rating) query.append("rating", rating);
+
+        const res = await fetch(`/search?${query.toString()}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          container.innerHTML = "<p>❌ No movies found.</p>";
+        } else {
+          container.innerHTML = "";
+          displayMovies(data, container);
+          container.scrollIntoView({ behavior: "smooth" });
+        }
+      } catch (err) {
+        container.innerHTML = "<p>⚠️ Error searching for movie.</p>";
+        console.error(err);
+      }
+    });
   }
 });
 
@@ -24,34 +68,6 @@ function applyTheme(mode) {
 themeToggle.addEventListener("change", () => {
   applyTheme(themeToggle.checked ? "light" : "dark");
 });
-
-// 🔍 Movie Search
-async function searchMovie() {
-  const movieName = document.getElementById("movieSearch").value.trim();
-  const container = document.getElementById("movieDetails");
-
-  if (!movieName) return alert("Please enter a movie name!");
-  container.innerHTML = "<p>🔍 Searching...</p>";
-
-  // Clear other sections for better UX
-  clearSections();
-
-  try {
-    const res = await fetch(`/search?name=${encodeURIComponent(movieName)}`);
-    const data = await res.json();
-    container.innerHTML = "";
-
-    if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = "<p>❌ No movies found.</p>";
-    } else {
-      displayMovies(data, container);
-      container.scrollIntoView({ behavior: "smooth" });
-    }
-  } catch (err) {
-    container.innerHTML = "<p>⚠️ Error searching for movie.</p>";
-    console.error(err);
-  }
-}
 
 // 🎬 Trending
 async function fetchTrending() {
@@ -113,8 +129,6 @@ async function fetchMoodMovies() {
   if (!selectedMood) return;
 
   container.innerHTML = `<p>🎭 Fetching "${selectedMood}" mood movies...</p>`;
-
-  // Clear other sections
   clearSections();
 
   try {
@@ -122,7 +136,6 @@ async function fetchMoodMovies() {
     const data = await res.json();
 
     container.innerHTML = "";
-
     if (!Array.isArray(data) || data.length === 0) {
       container.innerHTML = `<p>❌ No "${selectedMood}" movies found.</p>`;
     } else {
@@ -135,9 +148,28 @@ async function fetchMoodMovies() {
   }
 }
 
+// 🎭 Genre Filter Fill
+async function populateGenres() {
+  const genreSelect = document.getElementById("genreFilter");
+  if (!genreSelect) return;
+
+  try {
+    const res = await fetch("/genres");
+    const genres = await res.json();
+    genres.forEach(g => {
+      const option = document.createElement("option");
+      option.value = g.id;
+      option.textContent = g.name;
+      genreSelect.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Error fetching genres:", err);
+  }
+}
+
 // 🧹 Clear Other Sections
 function clearSections() {
-  const sections = ["trendingSection", "topRatedSection", "upcomingSection"];
+  const sections = ["trendingSection", "topRatedSection", "upcomingSection", "searchResults", "movieDetails"];
   sections.forEach(id => {
     const section = document.getElementById(id);
     if (section) section.innerHTML = "";
@@ -155,9 +187,9 @@ function displayMovies(movies, container) {
 
     card.innerHTML = `
       <img src="${movie.poster || 'https://via.placeholder.com/250x375?text=No+Image'}" alt="${movie.title}">
-      <h3>${movie.title} (${movie.year})</h3>
-      <p><strong>⭐ Rating:</strong> ${movie.rating}</p>
-      <p>${movie.description.slice(0, 100)}...</p>
+      <h3>${movie.title} (${movie.year || ''})</h3>
+      <p><strong>⭐ Rating:</strong> ${movie.rating || 'N/A'}</p>
+      <p>${movie.description ? movie.description.slice(0, 100) + '...' : ''}</p>
     `;
 
     container.appendChild(card);

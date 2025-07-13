@@ -57,12 +57,54 @@
       </select>
     </div>
 
+    <!-- 🎛️ Filter Section -->
+    <div class="filter-section">
+      <h3>🎛️ Filter Movies</h3>
+
+      <label for="genreFilter">Genre:</label>
+      <select id="genreFilter">
+        <option value="">All</option>
+        <option value="28">Action</option>
+        <option value="35">Comedy</option>
+        <option value="18">Drama</option>
+        <option value="27">Horror</option>
+        <option value="10749">Romance</option>
+        <option value="878">Sci-Fi</option>
+      </select>
+
+      <label for="yearFilter">Year:</label>
+      <select id="yearFilter">
+        <option value="">All</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+
+      <label for="languageFilter">Language:</label>
+      <select id="languageFilter">
+        <option value="">All</option>
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="fr">French</option>
+        <option value="ja">Japanese</option>
+      </select>
+
+      <button onclick="applyFilters()">Apply Filters</button>
+    </div>
+
     <!-- 🔍 Movie Search -->
-    <form onsubmit="searchMovie(); return false;">
+    <form id="searchForm">
       <label for="movieSearch" hidden>Movie Name</label>
       <input type="text" id="movieSearch" placeholder="Enter a movie name..." />
       <button type="submit">Search</button>
     </form>
+
+    <!-- 🔍 Search Results -->
+    <section>
+      <h2>🔎 Search Results</h2>
+      <div id="searchResults" class="movie-grid"></div>
+    </section>
 
     <!-- 🎬 Trending Movies -->
     <section>
