@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cinephiles Watch</title>
 
+  <!-- 📱 PWA Manifest and Theme -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff6b35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Cinephiles Watch">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
   <!-- ✅ SEO + Social Meta Tags -->
   <meta name="description" content="Cinephiles Watch - Your ultimate movie guide for trending, mood-based, and detailed movie info." />
   <meta name="keywords" content="movies, trending movies, mood-based recommendations, streaming guide, film search, Cinephiles Watch" />
@@ -129,5 +137,20 @@
   </main>
 
   <script src="script.js"></script>
+  
+  <!-- 📱 PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('✅ SW registered successfully:', registration);
+          })
+          .catch(function(registrationError) {
+            console.log('❌ SW registration failed:', registrationError);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
